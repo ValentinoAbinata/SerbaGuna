@@ -55,7 +55,7 @@ bool isEmptyHash() ;
 int hashKey(string kode) ; // Hashing
 
 bool isEmptyBST();
-bool isEmptyBSTHistory();
+bool isEmptyBSTHistory();   // Binary Search Tree
 
 void postOrder(BSTNode* root);
 void preOrder(BSTNode* root);
@@ -64,7 +64,8 @@ void inOrder(BSTNode* root);
 void insertBST(BSTNode*& root, Produk produk);
 void inOrderRange(BSTNode* root, string nama1, string nama2);
 void postOrderDescending(BSTNode* root);
-//  delete bst di menu 3 testing
+void deleteBST(BSTNode*& root, string kode) ;
+BSTNode* findMin(BSTNode* root) ;
 
 void errorH();
 
@@ -183,7 +184,6 @@ void menu1(){
     cout << "Masukkan Nama Produk : " ; getline(cin, cnama) ;
     cout << "Masukkan Kode Produk : " ; getline(cin, ckode) ;
     cout << "Masukkan Harga Produk[Tanpa Titik/ Koma] : Rp." ; cin >> charga ;
-    cout << "indeksnya : " << index << endl ; // testing
     cout << endl << endl;
     
     int index = hashKey(ckode);
@@ -355,7 +355,49 @@ void menu3(){
         cout << "Produk dengan kode " << ckode << " berhasil dihapus!" << endl;
     }
 
+    // Hapus dari BST
+    deleteBST(root, ckode);
 }
+
+void deleteBST(BSTNode*& root, string kode) {
+    if (root == NULL) return;
+
+    if (kode < root->produk.kode) {
+        deleteBST(root->left, kode);
+    } else if (kode > root->produk.kode) {
+        deleteBST(root->right, kode);
+    } else {
+        // Jika node yang ingin dihapus ditemukan
+        if (root->left == NULL && root->right == NULL) {
+            // Jika node yang ingin dihapus tidak memiliki anak
+            delete root;
+            root = NULL;
+        } else if (root->left == NULL) {
+            // Jika node yang ingin dihapus hanya memiliki anak kanan
+            BSTNode* temp = root;
+            root = root->right;
+            delete temp;
+        } else if (root->right == NULL) {
+            // Jika node yang ingin dihapus hanya memiliki anak kiri
+            BSTNode* temp = root;
+            root = root->left;
+            delete temp;
+        } else {
+            // Jika node yang ingin dihapus memiliki anak kiri dan kanan
+            BSTNode* temp = findMin(root->right);
+            root->produk = temp->produk;
+            deleteBST(root->right, temp->produk.kode);
+        }
+    }
+}
+
+BSTNode* findMin(BSTNode* root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root;
+}
+
 
 void menu4(){
     string ckode ;
